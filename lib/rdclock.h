@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <rdevent_line.h>
+#include <rdschedcartlist.h>
 #include <rdstation.h>
 
 class RDClock
@@ -52,7 +53,8 @@ class RDClock
    void remove(int line);
    bool validate(const QTime &start_time,int length,int except_line=-1);
    bool generateLog(int hour,const QString &logname,const QString &svc_name,
-		    QString *errors);
+		    QString *errors,
+		    QMap<QString,RDSchedCartList *> *cart_lists);
 
   private:
    QString clock_name;

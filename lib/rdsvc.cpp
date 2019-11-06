@@ -28,6 +28,7 @@
 #include "rd.h"
 #include "rdescape_string.h"
 #include "rdlog.h"
+#include "rdschedcartlist.h"
 #include "rdsvc.h"
 #include "rdweb.h"
 
@@ -708,6 +709,8 @@ bool RDSvc::generateLog(const QDate &date,const QString &logname,
   RDClock clock(svc_station);
   RDLog *log=NULL;
   RDLogLock *log_lock=NULL;
+  QTime profiling_start_time=QTime::currentTime();
+  QMap<QString,RDSchedCartList *> cart_lists;
 
   if((!date.isValid()||logname.isEmpty())) {
     return false;
@@ -752,7 +755,7 @@ bool RDSvc::generateLog(const QDate &date,const QString &logname,
       if((!q->value(0).isNull())&&(!q->value(0).toString().isEmpty())) {
 	clock.setName(q->value(0).toString());
 	clock.load();
-	clock.generateLog(i,logname,svc_name,report);
+	clock.generateLog(i,logname,svc_name,report,&cart_lists);
 	clock.clear();
       }
     }
@@ -802,6 +805,16 @@ bool RDSvc::generateLog(const QDate &date,const QString &logname,
   log->setAutoRefresh(autoRefresh());
   delete log;
   delete log_lock;
+
+  //
+  // Delete Cached Cart Lists
+  //
+  for(QMap<QString,RDSchedCartList *>::const_iterator it=
+	cart_lists.begin();it!=cart_lists.end();it++) {
+    delete it.value();
+  }
+
+  fprintf(stderr,"Generation Time: %d mS\n",profiling_start_time.msecsTo(QTime::currentTime()));
 
   return true;
 }

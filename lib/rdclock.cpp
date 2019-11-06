@@ -295,7 +295,8 @@ bool RDClock::validate(const QTime &start_time,int length,int except_line)
 
 
 bool RDClock::generateLog(int hour,const QString &logname,
-			  const QString &svc_name,QString *errors)
+			  const QString &svc_name,QString *errors,
+			  QMap<QString,RDSchedCartList *> *cart_lists)
 {
   QString sql;
   RDSqlQuery *q;
@@ -315,7 +316,7 @@ bool RDClock::generateLog(int hour,const QString &logname,
     eventline.setStartTime(QTime().addMSecs(q->value(1).toInt()).
 			   addSecs(3600*hour));
     eventline.setLength(q->value(2).toInt());
-    eventline.generateLog(logname,svc_name,errors,clock_name);
+    eventline.generateLog(logname,svc_name,errors,clock_name,cart_lists);
     eventline.clear();
   }
   delete q;

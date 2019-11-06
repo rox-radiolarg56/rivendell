@@ -27,6 +27,7 @@
 #include <rdeventimportlist.h>
 #include <rdlog.h>
 #include <rdlog_line.h>
+#include <rdschedcartlist.h>
 #include <rdstation.h>
 
 class RDEventLine
@@ -81,7 +82,8 @@ class RDEventLine
   bool load();
   bool save(RDConfig *config);
   bool generateLog(QString logname,const QString &svcname,
-		   QString *errors,QString clockname);
+		   QString *errors,QString clockname,
+		   QMap<QString,RDSchedCartList *> *cart_lists);
   bool linkLog(RDLogEvent *e,RDLog *log,const QString &svcname,
 	       RDLogLine *link_logline,const QString &track_str,
 	       const QString &label_cart,const QString &track_cart,

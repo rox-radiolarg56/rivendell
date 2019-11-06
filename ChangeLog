@@ -19245,3 +19245,6 @@
 	* Added an rdsoftkeys(1) man page.
 2019-10-31 Fred Gleason <fredg@paravelsystems.com>
 	* Incremented the package version to 3.2.0.
+2019-11-05 Fred Gleason <fredg@paravelsystems.com>
+	* Optimized generation of music scheduler events in rdlogmanager(1)
+	by caching and reusing RDSchedCartList objects.

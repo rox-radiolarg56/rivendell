@@ -450,7 +450,8 @@ bool RDEventLine::save(RDConfig *config)
 
 
 bool RDEventLine::generateLog(QString logname,const QString &svcname,
-			      QString *report, QString clockname)
+			      QString *report, QString clockname,
+			      QMap<QString,RDSchedCartList *> *cart_lists)
 {
   QString sql;
   RDSqlQuery *q;
@@ -470,6 +471,21 @@ bool RDEventLine::generateLog(QString logname,const QString &svcname,
   //
   // Get Current Count and Link ID
   //
+  sql=QString("select ")+
+    "max(COUNT),"+    // 00
+    "max(LINK_ID) "+  // 01
+    "from LOG_LINES where "+
+    "LOG_NAME=\""+RDEscapeString(logname)+"\"";
+  q=new RDSqlQuery(sql);
+  if(q->first()) {
+    count=q->value(0).toInt()+1;
+    if(q->value(1).toInt()>=0) {
+      link_id=q->value(1).toInt()+1;
+    }
+  }
+  delete q;
+    
+  /*
   sql=QString("select COUNT from LOG_LINES where ")+
     "LOG_NAME=\""+RDEscapeString(logname)+"\" "+
     "order by COUNT desc";
@@ -488,6 +504,7 @@ bool RDEventLine::generateLog(QString logname,const QString &svcname,
     link_id=q->value(0).toInt()+1;
   }
   delete q;
+  */
 
   //
   // Override Default Parameters if Preposition Set
@@ -626,26 +643,72 @@ bool RDEventLine::generateLog(QString logname,const QString &svcname,
     }
     stackid++;    
     delete q;
-      
+
+    /*
     //
     // Load all carts in requested group into schedCL
     //
-    sql=QString("select NUMBER,ARTIST,")+
-      "CONCAT(GROUP_CONCAT(RPAD(SC.SCHED_CODE,11,' ') separator ''),'.') as SCHED_CODES"+
-      " from CART LEFT JOIN CART_SCHED_CODES AS SC on (NUMBER=SC.CART_NUMBER)"+
-      " where GROUP_NAME='"+RDEscapeString(schedGroup())+"'"+
-      " group by NUMBER";
+    sql=QString("select ")+
+      "CART.NUMBER,"+                  // 00
+      "CART.ARTIST,"+                  // 01
+      "CART_SCHED_CODES.SCHED_CODE "+  // 02
+      "from CART left join CART_SCHED_CODES "+
+      "on CART.NUMBER=CART_SCHED_CODES.CART_NUMBER where "+
+      "CART.GROUP_NAME='"+RDEscapeString(schedGroup())+"'";
+      //"group by CART.NUMBER";
+    printf("SQL: %s\n",(const char *)sql.toUtf8());
     RDSchedCartList *schedCL=new RDSchedCartList();
+    unsigned prev_cartnum=0;
+    QString prev_artist;
+    QStringList codes;
     q=new RDSqlQuery(sql);
     while(q->next()) {
-      QStringList codes=q->value(2).toString().split(" ",QString::SkipEmptyParts);
-      if((codes.size()>0)&&(codes.last()==".")) {
-	codes.removeLast();
+      if((q->value(0).toUInt()!=prev_cartnum)&&(prev_cartnum!=0)) {
+	schedCL->insertItem(q->value(0).toUInt(),0,0,q->value(1).toString(),
+			    codes);
+	codes.clear();
       }
-      schedCL->
-	insertItem(q->value(0).toUInt(),0,0,q->value(1).toString(),codes);
+      else {
+	prev_cartnum=q->value(0).toUInt();
+	prev_artist=q->value(1).toString();
+	if(!q->value(2).toString().isEmpty()) {
+	  codes.push_back(q->value(2).toString());
+	}
+      }
+    }
+    if(q->previous()&&(codes.size()!=0)) {
+      schedCL->insertItem(q->value(0).toUInt(),0,0,q->value(1).toString(),
+			  codes);
     }
     delete q;
+    */
+
+    //
+    // Load all carts in requested group into schedCL
+    //
+    RDSchedCartList *schedCL=NULL;
+    if(cart_lists->contains(schedGroup())) {
+      schedCL=cart_lists->value(schedGroup());
+    }
+    else {
+      schedCL=new RDSchedCartList();
+      (*cart_lists)[schedGroup()]=schedCL;
+      sql=QString("select NUMBER,ARTIST,")+
+	"CONCAT(GROUP_CONCAT(RPAD(SC.SCHED_CODE,11,' ') separator ''),'.') as SCHED_CODES"+
+	" from CART LEFT JOIN CART_SCHED_CODES AS SC on (NUMBER=SC.CART_NUMBER)"+
+	" where GROUP_NAME='"+RDEscapeString(schedGroup())+"'"+
+	" group by NUMBER";
+      q=new RDSqlQuery(sql);
+      while(q->next()) {
+	QStringList codes=q->value(2).toString().split(" ",QString::SkipEmptyParts);
+	if((codes.size()>0)&&(codes.last()==".")) {
+	  codes.removeLast();
+	}
+	schedCL->
+	  insertItem(q->value(0).toUInt(),0,0,q->value(1).toString(),codes);
+      }
+      delete q;
+    }
       
     //////////////////////////////////
     //                              //
@@ -942,7 +1005,7 @@ bool RDEventLine::generateLog(QString logname,const QString &svcname,
       delete q;
       */
 
-      delete schedCL;
+      //delete schedCL;
     }
     else {
       // We don't have any carts to work with
@@ -953,7 +1016,7 @@ bool RDEventLine::generateLog(QString logname,const QString &svcname,
       }
       *report+="\n";
 
-      delete schedCL;
+      //delete schedCL;
     }
   }
 
