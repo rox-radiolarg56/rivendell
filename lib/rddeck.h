@@ -2,7 +2,7 @@
 //
 // Abstract a Rivendell Record/Play Deck
 //
-//   (C) Copyright 2002-2004,2016 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2002-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -62,6 +62,8 @@ class RDDeck
    void setSwitchOutput(int output) const;
    int switchDelay() const;
    void setSwitchDelay(int delay) const;
+   int recordingId() const;
+   void setRecordingId(int id) const;
 
   private:
    int GetIntValue(const QString &field) const;
@@ -74,4 +76,4 @@ class RDDeck
 };
 
 
-#endif 
+#endif  // RDDECK_H

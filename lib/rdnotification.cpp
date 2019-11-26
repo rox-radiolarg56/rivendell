@@ -21,12 +21,13 @@
 #include <QStringList>
 
 #include "rdnotification.h"
+#include "rdstringlist.h"
 
 RDNotification::RDNotification(Type type,Action action,const QVariant &id)
 {
   notify_type=type;
   notify_action=action;
-  notify_id=id;
+  notify_ids.push_back(id);
 }
 
 
@@ -34,6 +35,7 @@ RDNotification::RDNotification()
 {
   notify_type=RDNotification::NullType;
   notify_action=RDNotification::NoAction;
+  notify_ids.push_back(QVariant());
 }
 
 
@@ -63,19 +65,26 @@ void RDNotification::setAction(RDNotification::Action action)
 
 QVariant RDNotification::id() const
 {
-  return notify_id;
+  return notify_ids.at(0);
 }
 
 
-void RDNotification::setId(const QVariant id)
+QList<QVariant> RDNotification::ids() const
 {
-  notify_id=id;
+  return notify_ids;
 }
 
 
-bool RDNotification::isValid() const
+void RDNotification::setId(const QVariant &id)
 {
-  return true;
+  notify_ids.clear();
+  notify_ids.push_back(id);
+}
+
+
+void RDNotification::setIds(const QList<QVariant> &ids)
+{
+  notify_ids=ids;
 }
 
 
@@ -83,11 +92,12 @@ bool RDNotification::read(const QString &str)
 {
   notify_type=RDNotification::NullType;
   notify_action=RDNotification::NoAction;
-  notify_id=QVariant();
+  notify_ids.clear();
 
-  QStringList args=str.split(" ");
+  RDStringList args=RDStringList().split(' ',str,QChar('\\'));
   if(args.size()==4) {
     if(args[0]!="NOTIFY") {
+      notify_ids.push_back(QVariant());
       return false;
     }
     for(int i=0;i<RDNotification::LastType;i++) {
@@ -96,23 +106,20 @@ bool RDNotification::read(const QString &str)
 	notify_type=type;
 	switch(type) {
 	case RDNotification::CartType:
-	  notify_id=QVariant(args[3].toUInt());
-	  break;
-
-	case RDNotification::LogType:
-	  notify_id=QVariant(args[3]);
-	  break;
-
+	case RDNotification::CatchEventType:
 	case RDNotification::PypadType:
-	  notify_id=QVariant(args[3].toUInt());
+	  notify_ids.push_back(QVariant(args.at(3).toUInt()));
 	  break;
 
 	case RDNotification::DropboxType:
-	  notify_id=QVariant(args[3]);
+	case RDNotification::HeartbeatType:
+	case RDNotification::LogType:
+	  notify_ids.push_back(QVariant(args[3].replace("\\ "," ")));
 	  break;
 
-	case RDNotification::CatchEventType:
-	  notify_id=QVariant(args[3].toUInt());
+	case RDNotification::CatchDeckStatusType:
+	  // FIXME!
+	  //notify_ids.push_back(QVariant(args[3]));
 	  break;
 
 	case RDNotification::NullType:
@@ -122,6 +129,7 @@ bool RDNotification::read(const QString &str)
       }
     }
     if(notify_type==RDNotification::NullType) {
+      notify_ids.push_back(QVariant());
       return false;
     }
     for(int i=0;i<RDNotification::LastAction;i++) {
@@ -131,6 +139,7 @@ bool RDNotification::read(const QString &str)
       }
     }
     if(notify_action==RDNotification::NoAction) {
+      notify_ids.push_back(QVariant());
       return false;
     }
   }
@@ -147,23 +156,20 @@ QString RDNotification::write() const
   ret+=RDNotification::actionString(notify_action)+" ";
   switch(notify_type) {
   case RDNotification::CartType: 
-    ret+=QString().sprintf("%u",notify_id.toUInt());
-    break;
-
-  case RDNotification::LogType: 
-    ret+=notify_id.toString();
-    break;
-
+  case RDNotification::CatchEventType: 
   case RDNotification::PypadType: 
-    ret+=QString().sprintf("%u",notify_id.toUInt());
+    ret+=QString().sprintf("%u",notify_ids.at(0).toUInt());
     break;
 
   case RDNotification::DropboxType: 
-    ret+=notify_id.toString();
+  case RDNotification::HeartbeatType: 
+  case RDNotification::LogType: 
+    ret+=notify_ids.at(0).toString().replace(" ","\\ ");
     break;
 
-  case RDNotification::CatchEventType: 
-    ret+=QString().sprintf("%u",notify_id.toUInt());
+  case RDNotification::CatchDeckStatusType: 
+    // FIXME!
+    //ret+=notify_id.toString();
     break;
 
   case RDNotification::NullType:
@@ -197,6 +203,14 @@ QString RDNotification::typeString(RDNotification::Type type)
 
   case RDNotification::CatchEventType:
     ret="CATCH_EVENT";
+    break;
+
+  case RDNotification::CatchDeckStatusType:
+    ret="CATCH_DECK_STATUS";
+    break;
+
+  case RDNotification::HeartbeatType:
+    ret="HEARTBEAT";
     break;
 
   case RDNotification::NullType:

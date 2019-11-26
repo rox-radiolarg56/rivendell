@@ -628,6 +628,41 @@
     </note>
   </sect2>
 
+  <sect2 xml:id="privileged_commands.request_host_status_list">
+    <title>Request Host Status List</title>
+    <para>
+      Request the list of online Rivendell hosts
+    </para>
+    <para>
+      <userinput>RH!</userinput>
+    </para>
+    <para>
+      Returns a comma-delimited list of all Rivendell hosts that are online,
+      in the following form:
+    </para>
+    <para>
+      <computeroutput>RH <replaceable>hostname</replaceable>,[...]!</computeroutput>
+    </para>
+  </sect2>
+
+  <sect2 xml:id="privileged_commands.host_status_change">
+    <title>Host Status Changed (receive only)</title>
+    <para>
+      Synchronously report change in host status.
+    </para>
+    <para>
+      <userinput>HS!</userinput>
+    </para>
+    <para>
+      Reports a change in status of <replaceable>hostname</replaceable>.
+      <computeroutput>0</computeroutput> means host has gone offline, while
+      <computeroutput>1</computeroutput> means host has come online. 
+    </para>
+    <para>
+      <userinput>HS <replaceable>hostname</replaceable> 0|1!</userinput>
+    </para>
+  </sect2>
+
 </sect1>
 
 </article>

@@ -2,7 +2,7 @@
 //
 // Connection to the Rivendell Interprocess Communication Daemon
 //
-//   (C) Copyright 2002-2004,2016-2018 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2002-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -18,10 +18,10 @@
 //   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 //
 
-#include <qsqldatabase.h>
 #include <qstring.h>
 #include <qobject.h>
 #include <qlabel.h>
+#include <qstringlist.h>
 #include <qtimer.h>
 #include <qtcpsocket.h>
 
@@ -46,6 +46,7 @@ class RDRipc : public QObject
   QString user() const;
   QString station() const;
   bool onairFlag() const;
+  bool hostStatus(const QString &hostname) const;
   void setUser(QString user);
   void setIgnoreMask(bool state);
   void connectHost(QString hostname,Q_UINT16 hostport,QString password);
@@ -72,6 +73,7 @@ class RDRipc : public QObject
   void notificationReceived(RDNotification *notify);
   void onairFlagChanged(bool state);
   void rmlReceived(RDMacro *rml);
+  void hostStatusChanged(const QString &hostname,bool state);
   
  private slots:
   void connectedData();
@@ -91,6 +93,7 @@ class RDRipc : public QObject
   bool debug;
   QString ripc_accum;
   bool ripc_connected;
+  QStringList ripc_online_hostnames;
 };
 
 

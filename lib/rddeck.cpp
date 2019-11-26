@@ -2,7 +2,7 @@
 //
 // Abstract a Rivendell Deck.
 //
-//   (C) Copyright 2002-2003,2016-2018 Fred Gleason <fredg@paravelsystems.com>
+//   (C) Copyright 2002-2019 Fred Gleason <fredg@paravelsystems.com>
 //
 //   This program is free software; you can redistribute it and/or modify
 //   it under the terms of the GNU General Public License version 2 as
@@ -274,6 +274,44 @@ int RDDeck::switchDelay() const
 void RDDeck::setSwitchDelay(int delay) const
 {
   SetRow("SWITCH_DELAY",delay);
+}
+
+
+int RDDeck::recordingId() const
+{
+  int id=-1;
+  QString sql=QString("select RECORDING_ID from DECKS where ")+
+    "(STATION_NAME=\""+RDEscapeString(deck_station)+"\")&&"+
+    QString().sprintf("(CHANNEL=%d)",deck_channel);
+  RDSqlQuery *q=new RDSqlQuery(sql);
+  if(q->first()) {
+    if(!q->value(0).isNull()) {
+      id=q->value(0).toInt();
+    }
+  }
+  delete q;
+
+  return id;
+}
+
+
+void RDDeck::setRecordingId(int id) const
+{
+  QString sql;
+
+  if(id<0) {
+    sql=QString("update DECKS set ")+
+      "RECORDING_ID=NULL where "+
+      "(STATION_NAME=\""+RDEscapeString(deck_station)+"\")&&"+
+      QString().sprintf("(CHANNEL=%d)",deck_channel);
+  }
+  else {
+    sql=QString("update DECKS set ")+
+      QString().sprintf("RECORDING_ID=%d where ",id)+
+      "(STATION_NAME=\""+RDEscapeString(deck_station)+"\")&&"+
+      QString().sprintf("(CHANNEL=%d)",deck_channel);
+  }
+  RDSqlQuery::apply(sql);
 }
 
 

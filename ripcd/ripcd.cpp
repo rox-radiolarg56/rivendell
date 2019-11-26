@@ -175,6 +175,18 @@ MainObject::MainObject(QObject *parent)
   ripcd_notification_mcaster->bind(RD_NOTIFICATION_PORT);
   ripcd_notification_mcaster->subscribe(rda->system()->notificationAddress());
 
+  ripcd_station_heartbeat_timer=new QTimer(this);
+  ripcd_station_heartbeat_timer->setSingleShot(true);
+  connect(ripcd_station_heartbeat_timer,SIGNAL(timeout()),
+	  this,SLOT(stationHeartbeatData()));
+  ripcd_station_heartbeat_timer->start(RIPCD_STATION_HEARTBEAT_CHECK_INTERVAL);
+
+  ripcd_station_heartbeat_send_timer=new QTimer(this);
+  ripcd_station_heartbeat_send_timer->setSingleShot(true);
+  connect(ripcd_station_heartbeat_send_timer,SIGNAL(timeout()),
+	  this,SLOT(stationHeartbeatSendData()));
+  ripcd_station_heartbeat_send_timer->start(0);
+
   //
   // Exit Timer
   //
@@ -246,7 +258,9 @@ void MainObject::notificationReceivedData(const QString &msg,
     return;
   }
   RunLocalNotifications(notify);
-  BroadcastCommand("ON "+msg+"!");
+  if(notify->type()!=RDNotification::HeartbeatType) {
+    BroadcastCommand("ON "+msg+"!");
+  }
 
   delete notify;
 }
@@ -348,6 +362,7 @@ void MainObject::exitTimerData()
 	delete ripcd_switcher[i];
       }
     }
+    SendExitingNotification();
     rda->syslog(LOG_INFO,"exiting normally");
     exit(0);
   }
@@ -624,6 +639,10 @@ bool MainObject::DispatchCommand(RipcdConnection *conn)
 
   if(cmds[0]=="TA") {  // Send Onair Flag State
     EchoCommand(conn->id(),QString().sprintf("TA %d!",ripc_onair_flag));
+  }
+
+  if(cmds[0]=="RH") {  // Send Host Status List
+    SendHostStatusList(conn->id());
   }
 
   return true;

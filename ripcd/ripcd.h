@@ -25,6 +25,7 @@
 
 #include <vector>
 
+#include <qmap.h>
 #include <qobject.h>
 #include <qstring.h>
 #include <qsignalmapper.h>
@@ -53,6 +54,11 @@
 //
 // Global RIPCD Definitions
 //
+#define RIPCD_STATION_HEARTBEAT_CHECK_INTERVAL 10000
+#define RIPCD_STATION_HEARTBEAT_MIN_SEND_INTERVAL 5000
+#define RIPCD_STATION_HEARTBEAT_MAX_SEND_INTERVAL 25000
+#define RIPCD_STATION_HEARTBEAT_DEADLINE_INTERVAL 30000
+
 #define RIPCD_MAX_LENGTH 256
 #define RIPCD_RML_READ_INTERVAL 100
 #define RIPCD_TTY_READ_INTERVAL 100
@@ -67,6 +73,8 @@ class MainObject : public QObject
 
  private slots:
   void newConnectionData();
+  void stationHeartbeatSendData();
+  void stationHeartbeatData();
   void notificationReceivedData(const QString &msg,const QHostAddress &addr);
   void sendRml(RDMacro *rml);
   void rmlEchoData();
@@ -96,6 +104,8 @@ class MainObject : public QObject
   QString StripPoint(QString);
   void LoadLocalMacros();
   void RunLocalNotifications(RDNotification *notify);
+  void SendExitingNotification();
+  void SendHostStatusList(int conn_id);
   void RunLocalMacros(RDMacro *rml);
   void LoadGpiTable();
   void SendGpi(int ch,int matrix);
@@ -137,6 +147,9 @@ class MainObject : public QObject
   unsigned ripc_macro_cart[RD_MAX_MACRO_TIMERS];
   RDMulticaster *ripcd_notification_mcaster;
   QTimer *ripcd_garbage_timer;
+  QMap<QString,QDateTime> ripcd_station_heartbeats;
+  QTimer *ripcd_station_heartbeat_timer;
+  QTimer *ripcd_station_heartbeat_send_timer;
 #ifdef JACK
   jack_client_t *ripcd_jack_client;
   QTimer *ripcd_start_jack_timer;

@@ -21,6 +21,7 @@
 #ifndef RDNOTIFICATION_H
 #define RDNOTIFICATION_H
 
+#include <qlist.h>
 #include <qstring.h>
 #include <qvariant.h>
 
@@ -28,7 +29,8 @@ class RDNotification
 {
  public:
   enum Type {NullType=0,CartType=1,LogType=2,PypadType=3,DropboxType=4,
-	     CatchEventType=5,LastType=6};
+	     CatchEventType=5,CatchDeckStatusType=6,HeartbeatType=7,
+	     LastType=8};
   enum Action {NoAction=0,AddAction=1,DeleteAction=2,ModifyAction=3,
 	       LastAction=4};
   RDNotification(Type type,Action action,const QVariant &id);
@@ -38,8 +40,9 @@ class RDNotification
   Action action() const;
   void setAction(Action action);
   QVariant id() const;
-  void setId(const QVariant id);
-  bool isValid() const;
+  QList<QVariant> ids() const;
+  void setId(const QVariant &id);
+  void setIds(const QList<QVariant> &ids);
   bool read(const QString &str);
   QString write() const;
   static QString typeString(Type type);
@@ -48,7 +51,7 @@ class RDNotification
  private:
   Type notify_type;
   Action notify_action;
-  QVariant notify_id;
+  QList<QVariant> notify_ids;
 };
 
 

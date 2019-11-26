@@ -22,3 +22,4 @@ SWITCH_STATION       varchar(64)       From OUTPUTS.STATION_NAME
 SWITCH_MATRIX        int(11)           From OUTPUTS.MATRIX
 SWITCH_OUTPUT        int(11)           From OUTPUTS.NUMBER
 SWITCH_DELAY         int(10) unsigned
+RECORDING_ID         int(10) unsigned  From RECORDINGS.ID

@@ -9857,6 +9857,18 @@ bool MainObject::UpdateSchema(int cur_schema,int set_schema,QString *err_msg)
     WriteSchemaVersion(++cur_schema);
   }
 
+  if((cur_schema<312)&&(set_schema>cur_schema)) {
+    sql=QString("alter table DECKS add column ")+
+      "RECORDING_ID int unsigned default NULL "+
+      "after SWITCH_DELAY";
+    if(!RDSqlQuery::apply(sql,err_msg)) {
+      return false;
+    }
+
+    WriteSchemaVersion(++cur_schema);
+  }
+
+
   // NEW SCHEMA UPDATES GO HERE...
 
   //

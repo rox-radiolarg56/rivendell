@@ -19267,3 +19267,12 @@
 	* Fixed a regression in the cart selector dialog that caused
 	default focus to be lost on the 'Filter' control after second
 	and subsequent invocations.
+2019-11-26 Fred Gleason <fredg@paravelsystems.com>
+	* Added a 'DECKS.RECORDING_ID' field to the database.
+	* Incremented the database version to 312.
+	* Added 'RDDeck::recordingId()' and 'RDDeck::setRecordingId()'
+	methods.
+	* Extended the Notifications framework to support multiple ID
+	fields.
+	* Added a 'HEARTBEAT' notification message.
+	* Stubbed out a 'CATCH_EVENT' notification message.

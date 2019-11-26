@@ -41,6 +41,15 @@ bool MainObject::RevertSchema(int cur_schema,int set_schema,QString *err_msg)
   // NEW SCHEMA REVERSIONS GO HERE...
 
   //
+  // Revert 312
+  //
+  if((cur_schema==312)&&(set_schema<cur_schema)) {
+    DropColumn("DECKS","RECORDING_ID");
+
+    WriteSchemaVersion(--cur_schema);
+  }
+
+  //
   // Revert 311
   //
   if((cur_schema==311)&&(set_schema<cur_schema)) {

@@ -78,6 +78,12 @@ bool RDRipc::onairFlag() const
 }
 
 
+bool RDRipc::hostStatus(const QString &hostname) const
+{
+  return ripc_online_hostnames.contains(hostname);
+}
+
+
 void RDRipc::setUser(QString user)
 {
   SendCommand(QString("SU ")+user+"!");
@@ -247,6 +253,7 @@ void RDRipc::DispatchCommand()
   
   if(cmds[0]=="PW") {  // Password Response
     SendCommand("RU!");
+    SendCommand("RH!");
   }
 
   if((cmds[0]=="RU")&&(cmds.size()==2)) {  // User Identity
@@ -258,6 +265,26 @@ void RDRipc::DispatchCommand()
       }
       emit userChanged();
     }
+  }
+
+  if((cmds[0]=="RH")&&(cmds.size()==2)) {  // Host List
+    ripc_online_hostnames.clear();
+    ripc_online_hostnames=cmds[1].split(",");
+    for(int i=0;i<ripc_online_hostnames.size();i++) {
+      emit hostStatusChanged(ripc_online_hostnames.at(i),true);
+    }
+  }
+
+  if((cmds[0]=="HS")&&(cmds.size()==3)) {  // Host Status Changed
+    if(cmds[2]=="1") {
+      if(!ripc_online_hostnames.contains(cmds[1])) {
+	ripc_online_hostnames.push_back(cmds[1]);
+      }
+    }
+    else {
+      ripc_online_hostnames.remove(cmds[1]);
+    }
+    emit hostStatusChanged(cmds[1],cmds[2]=="1");
   }
 
   if(cmds[0]=="MS") {  // Macro Sent

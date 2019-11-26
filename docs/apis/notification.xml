@@ -22,14 +22,16 @@
     The format of a message is as follows:
   </para>
   <para>
-    NOTIFY <replaceable choice='req'>obj-type</replaceable>
+    NOTIFY <replaceable choice='req'>obj-type-id</replaceable>
     <replaceable choice='req'>action</replaceable>
-    <replaceable choice='req'>id</replaceable>
+    <replaceable choice='req'>id0</replaceable>
+    <replaceable choice='opt'>id1</replaceable>
+    <replaceable choice='opt'>...</replaceable>
   </para>
   <variablelist>
     <varlistentry>
       <term>
-	<replaceable>obj-type</replaceable>
+	<replaceable>obj-type-id</replaceable>
       </term>
       <listitem>
 	<para>
@@ -81,11 +83,13 @@
     </varlistentry>
     <varlistentry>
       <term>
-	<replaceable>id</replaceable>
+	<replaceable>id&lt;n&gt;</replaceable>
       </term>
       <listitem>
 	<para>
-	  Unique id of the object.
+	  One or more fields constituting the unique id of the object.
+	  Space characters [ASCII 32] should be escaped by pre-pending an
+	  backslash character [ASCII 134].
 	</para>
       </listitem>
     </varlistentry>
@@ -99,9 +103,6 @@
   </para>
   <sect2 xml:id="sect.object_types.cart">
     <title>Carts</title>
-    <para>
-      <userinput>CART</userinput>
-    </para>
     <table xml:id="table.object_types.carts" frame="all" pgwide="0">
       <title>Cart Fields</title>
       <tgroup cols="2" align="left" colsep="1" rowsep="1">
@@ -109,9 +110,9 @@
 	<colspec colname="Value" colwidth="10.0*"/>
 	<tbody>
 	  <row><entry>Field</entry><entry>Value</entry></row>
-	  <row><entry>obj-type</entry><entry>CART</entry></row>
-	  <row><entry>id</entry><entry>Cart number</entry></row>
-	  <row><entry>type</entry><entry>Unsigned Integer</entry></row>
+	  <row><entry>obj-type-id</entry><entry>CART</entry></row>
+	  <row><entry>id[0]</entry><entry>Cart number</entry></row>
+	  <row><entry>id[0] format</entry><entry>Unsigned Integer [CART.NUMBER]</entry></row>
 	</tbody>
       </tgroup>
     </table>
@@ -119,9 +120,6 @@
 
   <sect2 xml:id="sect.object_types.log">
     <title>Logs</title>
-    <para>
-      <userinput>LOG</userinput>
-    </para>
     <table xml:id="table.object_types.logs" frame="all" pgwide="0">
       <title>Log Fields</title>
       <tgroup cols="2" align="left" colsep="1" rowsep="1">
@@ -129,9 +127,81 @@
 	<colspec colname="Value" colwidth="10.0*"/>
 	<tbody>
 	  <row><entry>Field</entry><entry>Value</entry></row>
-	  <row><entry>obj-type</entry><entry>LOG</entry></row>
-	  <row><entry>id</entry><entry>Log name</entry></row>
-	  <row><entry>type</entry><entry>String</entry></row>
+	  <row><entry>obj-type-id</entry><entry>LOG</entry></row>
+	  <row><entry>id[0]</entry><entry>Log name</entry></row>
+	  <row><entry>id[0] format</entry><entry>String [LOGS.NAME]</entry></row>
+	</tbody>
+      </tgroup>
+    </table>
+  </sect2>
+
+  <sect2 xml:id="sect.object_types.pypad">
+    <title>PyPAD Instances</title>
+    <table xml:id="table.object_types.pypad" frame="all" pgwide="0">
+      <title>PyPAD Instance Fields</title>
+      <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	<colspec colname="Field" colwidth="2.0*"/>
+	<colspec colname="Value" colwidth="10.0*"/>
+	<tbody>
+	  <row><entry>Field</entry><entry>Value</entry></row>
+	  <row><entry>obj-type-id</entry><entry>PYPAD</entry></row>
+	  <row><entry>id[0]</entry><entry>PyPAD Instance ID</entry></row>
+	  <row><entry>id[0] format</entry><entry>Unsigned Integer [PYPAD_INSTANCES.ID]</entry></row>
+	</tbody>
+      </tgroup>
+    </table>
+  </sect2>
+
+  <sect2 xml:id="sect.object_types.dropbox">
+    <title>Dropbox Restarts</title>
+    <table xml:id="table.object_types.dropbox" frame="all" pgwide="0">
+      <title>Dropbox Restarts Fields</title>
+      <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	<colspec colname="Field" colwidth="2.0*"/>
+	<colspec colname="Value" colwidth="10.0*"/>
+	<tbody>
+	  <row><entry>Field</entry><entry>Value</entry></row>
+	  <row><entry>obj-type-id</entry><entry>DROPBOX</entry></row>
+	  <row><entry>id[0]</entry><entry>Dropbox Hostname</entry></row>
+	  <row><entry>id[0] format</entry><entry>String[DROPBOXES.STATION_NAME]</entry></row>
+	</tbody>
+      </tgroup>
+    </table>
+  </sect2>
+
+  <sect2 xml:id="sect.object_types.heartbeat">
+    <title>Host Online Status</title>
+    <table xml:id="table.object_types.heartbeat" frame="all" pgwide="0">
+      <title>Host Online Status Fields</title>
+      <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	<colspec colname="Field" colwidth="2.0*"/>
+	<colspec colname="Value" colwidth="10.0*"/>
+	<tbody>
+	  <row><entry>Field</entry><entry>Value</entry></row>
+	  <row><entry>obj-type-id</entry><entry>HEARTBEAT</entry></row>
+	  <row><entry>id[0]</entry><entry>Rivendell Hostname</entry></row>
+	  <row><entry>id[0] format</entry><entry>String[STATIONS.NAME]</entry></row>
+	</tbody>
+      </tgroup>
+    </table>
+  </sect2>
+
+  <sect2 xml:id="sect.object_types.rdcatch_deck_status">
+    <title>RDCatch Deck Status</title>
+    <table xml:id="table.object_types.rdcatch_deck_status" frame="all" pgwide="0">
+      <title>RDCatch Deck Status Fields</title>
+      <tgroup cols="2" align="left" colsep="1" rowsep="1">
+	<colspec colname="Field" colwidth="2.0*"/>
+	<colspec colname="Value" colwidth="10.0*"/>
+	<tbody>
+	  <row><entry>Field</entry><entry>Value</entry></row>
+	  <row><entry>obj-type-id</entry><entry>CATCH_EVENT</entry></row>
+	  <row><entry>id[0]</entry><entry>Rivendell Hostname</entry></row>
+	  <row><entry>id[0] format</entry><entry>String [DECKS.STATION_NAME]</entry></row>
+	  <row><entry>id[1]</entry><entry>Current Event ID</entry></row>
+	  <row><entry>id[1] format</entry><entry>Unsigned Integer [DECKS.RECORDING_ID]</entry></row>
+	  <row><entry>id[2]</entry><entry>Current Event Description</entry></row>
+	  <row><entry>id[2] format</entry><entry>String [RECORDING.DESCRIPTION]</entry></row>
 	</tbody>
       </tgroup>
     </table>
