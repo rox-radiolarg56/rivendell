@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # get_target.sh
 # 

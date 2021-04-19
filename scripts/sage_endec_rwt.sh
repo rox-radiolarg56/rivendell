@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/bash
 
 # sage_endec_rwt.sh
 #

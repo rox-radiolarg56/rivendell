@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/bash
 #
 # rd_mysql_enable_host
 #

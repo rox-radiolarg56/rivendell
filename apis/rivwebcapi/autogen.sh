@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/bash
 ##
 ##    (C) Copyright 2002-2003 Fred Gleason <fredg@paravelsystems.com>
 ##

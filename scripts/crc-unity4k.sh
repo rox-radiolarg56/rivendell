@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # crc-unity4k.sh
 #

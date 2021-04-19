@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/bash
 
 # start_traverso.sh <wav-path>
 #
