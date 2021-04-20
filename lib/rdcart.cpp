@@ -362,7 +362,7 @@ void RDCart::updateSchedCodes(const QString &add_codes,const QString &remove_cod
   	QString wstr=q->value(0).toString();
   	wstr+="          ";
         wstr=wstr.left(11);
-  	if((sched_codes.contains(wstr)>0||add_codes.contains(wstr)>0)&&remove_codes.contains(wstr)==0) {
+  	if((sched_codes.contains(wstr)>(const void*)0||add_codes.contains(wstr)>(const void*)0)&&remove_codes.contains(wstr)==(const void*)0) {
           save_codes.push_back(wstr.stripWhiteSpace());
   	}
   }
