@@ -51,10 +51,10 @@ install-exec-am:
 	cp rivendell-rdalsaconfig-root.desktop $(DESTDIR)@prefix@/share/applications/
 	cp rivendell-rddbconfig-root.desktop $(DESTDIR)@prefix@/share/applications/
 	rm -f $(DESTDIR)$(prefix)/bin/rdalsaconfig-root
-	ln -s /usr/bin/consolehelper $(DESTDIR)$(prefix)/bin/rdalsaconfig-root
+	ln -s ./consolehelper $(DESTDIR)$(prefix)/bin/rdalsaconfig-root
 	cp rivendell-rddbconfig-root.desktop $(DESTDIR)@prefix@/share/applications/
 	rm -f $(DESTDIR)$(prefix)/bin/rddbconfig-root
-	ln -s /usr/bin/consolehelper $(DESTDIR)$(prefix)/bin/rddbconfig-root
+	ln -s ./consolehelper $(DESTDIR)$(prefix)/bin/rddbconfig-root
 
 uninstall-local:	
 	rm -f $(DESTDIR)@prefix@/share/applications/rivendell-*.desktop
